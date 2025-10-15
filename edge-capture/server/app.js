@@ -83,17 +83,17 @@ app.post('/capture/start', (req, res) => {
   if (!bin) return res.status(500).json({ error: 'no still-capture binary found (run on CM4 or set MOCK=1)' })
 
 	const args = [
-		'--width', '2592',
-		'--height', '1944',
+		'--width', String(process.env.WIDTH || 2592),
+		'--height', String(process.env.HEIGHT || 1944),
 		'--timeout', String(timeoutMs),
 		'--timelapse', String(interval),
-		'--quality', '95',
-		'--shutter', '3000',          // 1/333s
-		'--denoise', 'auto',          // 필요시 off 테스트
-		'--awb', 'tungsten',          // 조명에 맞게 조정
+		'--quality', String(process.env.JPEG_QUALITY || 95),
+		'--awb', (process.env.AWB_MODE || 'auto'),  // ← auto 권장
+		// '--awbgains', '1.5,1.5',                 // 수동 보정 쓸 땐 이 줄만 사용(둘 중 하나만)
+		// '--shutter', '3000',                     // 조명 충분하면 1/333s 근처로(블러 억제)
 		'-o', path.join(seq, 'frame_%03d.jpg'),
 		'-n',
-	  ];
+	  ]
 
   console.log('[capture] bin=%s args=%j', bin, args)
 
