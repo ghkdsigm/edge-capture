@@ -6,21 +6,70 @@
 			name="viewport"
 			content="width=device-width,initial-scale=1"
 		/>
-		<title>Mpark | Smart Auto 360° Panorama Generater</title>
+		<title>Mpark | Smart Auto 360° Panorama Generator</title>
 		<link
 			rel="stylesheet"
 			href="styles.css"
 		/>
 	</head>
 	<body>
-		<div class="app-container">
+		<div class="app">
 			<header class="app-header">
-				<h1 class="app-title">Smart Auto 360° Panorama Generater</h1>
-				<p class="app-subtitle">스마트 오토 파노라마 뷰 생성 시스템</p>
+				<div class="brand">
+					<div>
+						<img
+							src="https://www.m-park.co.kr/logo_mpark.svg"
+							alt="로고"
+							style="width: 100px"
+						/>
+					</div>
+					<div style="display: flex; flex-direction: column">
+						<h1 class="title">Smart Auto 360° Panorama Generator</h1>
+						<p class="subtitle">스마트 오토 파노라마 뷰 생성 시스템</p>
+					</div>
+				</div>
+				<div class="today">
+					<span id="today-date"></span>
+				</div>
 			</header>
 
-			<main class="app-main">
-				<section class="form-section">
+			<main class="grid">
+				<!-- 좌: 라이브/미리보기 -->
+				<section class="pane pane-left">
+					<h2 class="pane-title">LIVE / PREVIEW</h2>
+					<div class="preview-wrap">
+						<!-- 필요 시 <video> 또는 <img>로 교체 가능 -->
+						<div
+							class="preview"
+							id="preview"
+						>
+							<div class="preview-placeholder">
+								<p>촬영 후 시퀀스 프레임 미리보기를 여기에 표시합니다.</p>
+								<p class="hint">
+									운영 시, 최신 프레임 또는 샘플 프레임을 주기적으로 로드하도록 연결하세요.
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="preview-actions">
+						<button
+							id="btn-refresh"
+							class="btn btn-ghost"
+						>
+							미리보기 새로고침
+						</button>
+						<button
+							id="btn-play"
+							class="btn btn-ghost"
+						>
+							시퀀스 재생
+						</button>
+					</div>
+				</section>
+
+				<!-- 중: 촬영 폼/액션 -->
+				<section class="pane pane-center">
+					<h2 class="pane-title">촬영 설정</h2>
 					<div class="form-grid">
 						<div class="form-group">
 							<label
@@ -63,9 +112,9 @@
 							/>
 						</div>
 						<div class="form-group">
-							<label class="form-label">저장 방식</label>
+							<span class="form-label">저장 방식</span>
 							<div class="radio-group">
-								<div class="radio-item">
+								<label class="radio">
 									<input
 										id="save_local"
 										type="radio"
@@ -73,57 +122,87 @@
 										value="local"
 										checked
 									/>
-									<label
-										for="save_local"
-										class="radio-label"
-										>저장용</label
-									>
-								</div>
-								<div class="radio-item">
+									<span>저장용</span>
+								</label>
+								<label class="radio">
 									<input
 										id="save_upload"
 										type="radio"
 										name="save_mode"
 										value="upload"
 									/>
-									<label
-										for="save_upload"
-										class="radio-label"
-										>저장 및 업로드용</label
-									>
-								</div>
+									<span>저장 및 업로드용</span>
+								</label>
 							</div>
 						</div>
 					</div>
-				</section>
 
-				<section class="actions-section">
-					<div class="button-group">
+					<div class="actions">
 						<button
 							id="start"
 							class="btn btn-primary"
 						>
-							<span class="btn-icon">📷</span>
 							촬영 시작
 						</button>
 						<button
 							id="upload"
 							class="btn btn-secondary"
 						>
-							<span class="btn-icon">☁️</span>
 							업로드
 						</button>
 					</div>
+
+					<div class="status-card">
+						<div class="status-line">
+							<span class="status-key">작업 상태</span>
+							<span
+								id="status-text"
+								class="status-val"
+								>대기</span
+							>
+						</div>
+						<div class="status-line">
+							<span class="status-key">진행률</span>
+							<div class="progress">
+								<div
+									id="progress-bar"
+									class="progress-bar"
+									style="width: 0%"
+								></div>
+							</div>
+						</div>
+						<div class="status-line">
+							<span class="status-key">최근 응답</span>
+							<code
+								id="last-response"
+								class="codebox"
+								>-</code
+							>
+						</div>
+					</div>
 				</section>
 
-				<section class="log-section">
-					<div
-						id="log"
-						class="log-container"
-					></div>
+				<!-- 우: 히스토리 로그 -->
+				<section class="pane pane-right">
+					<h2 class="pane-title">히스토리 로그</h2>
+					<ul
+						id="history"
+						class="history"
+					>
+						<!-- 항목 예시:
+          <li class="history-item success">
+            <div class="row">
+              <span class="badge success">UPLOAD OK</span>
+              <time>2025-10-15 12:34:56</time>
+            </div>
+            <div class="desc">CAR-20251015-001 업로드 완료</div>
+          </li>
+          -->
+					</ul>
 				</section>
 			</main>
 		</div>
+
 		<script src="app.js"></script>
 	</body>
 </html>
