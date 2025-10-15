@@ -24,7 +24,7 @@ async function post(path, body, { timeoutMs = 20000 } = {}) {
     try { j = JSON.parse(text); } catch {}
     if (!r.ok) {
       const msg = j.error || `request failed (${r.status})`;
-      throw new Error(`${msg} [${url}] ${text ? " :: " + text.slice(0, 200) : ""}`);
+      throw new Error(`${msg} [${url}]${text ? " :: " + text.slice(0, 200) : ""}`);
     }
     return j;
   } finally {
@@ -38,7 +38,7 @@ function $(id) { return document.getElementById(id); }
 // 상단 날짜 표시
 function setToday() {
   const d = new Date();
-  const y = d.getFullFullYear ? d.getFullFullYear() : d.getFullYear();
+  const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   $("today-date").textContent = `${y}-${m}-${day}`;
@@ -92,15 +92,20 @@ async function handleStart() {
   setStatus("촬영 중");
   setProgress(5);
 
+  // 촬영 시간에 맞춰 타임아웃을 충분히 크게 잡는다.
+  // 한 바퀴 시간(ms) + 여유 버퍼
+  const turnMs = Math.ceil((60 / Math.max(0.1, rpm)) * 1000);
+  const startTimeout = turnMs + 15000;
+
   try {
-    const j = await post("/capture/start", { car_code, rpm, frames });
+    const j = await post("/capture/start", { car_code, rpm, frames }, { timeoutMs: startTimeout });
     setProgress(60);
     setResponse(j);
     addHistory("info", "CAPTURE OK", `${car_code} 촬영 완료 (frames=${j.frames})`);
 
     const mode = document.querySelector("input[name=save_mode]:checked")?.value || "local";
     if (mode === "upload") {
-      await handleUpload(); // 자동 업로드
+      await handleUploadWithTimeout(120000);
     } else {
       setStatus("촬영 완료");
       setProgress(100);
@@ -116,7 +121,7 @@ async function handleStart() {
 }
 
 // 업로드
-async function handleUpload() {
+async function handleUploadWithTimeout(timeoutMs = 60000) {
   const car_code = $("car_code").value.trim();
   if (!car_code) { alert("차량코드를 입력하세요."); return; }
 
@@ -125,7 +130,7 @@ async function handleUpload() {
   setProgress(75);
 
   try {
-    const j = await post("/capture/upload", { car_code });
+    const j = await post("/capture/upload", { car_code }, { timeoutMs });
     setProgress(100);
     setStatus("업로드 완료");
     setResponse(j);
@@ -138,6 +143,10 @@ async function handleUpload() {
   } finally {
     setBusy(false);
   }
+}
+
+async function handleUpload() {
+  return handleUploadWithTimeout(60000);
 }
 
 // 좌측 프리뷰 버튼 이벤트
@@ -161,7 +170,5 @@ function bindActions() {
   setToday();
   bindActions();
   bindPreview();
-
-  // 현재 API 베이스를 화면에 기록해 디버깅에 도움이 되도록 한다.
   addHistory("info", "API BASE", API_BASE);
 })();
