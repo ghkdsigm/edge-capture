@@ -189,27 +189,49 @@ app.post('/capture/start', (req, res) => {
 	})
 })
 
-app.post('/capture/upload', async (req, res) => {
-	const { car_code } = req.body || {}
-	if (!car_code) return res.status(400).json({ error: 'car_code required' })
-
-	const dir = path.join(ROOT, car_code)
-	if (!fs.existsSync(path.join(dir, 'manifest.json'))) {
-		return res.status(400).json({ error: 'no manifest; capture first' })
+app.post("/capture/upload", async (req, res) => {
+	const { car_code } = req.body || {};
+	if (!car_code) return res.status(400).json({ error: "car_code required" });
+  
+	const dir = path.join(ROOT, car_code);
+	const manifestPath = path.join(dir, "manifest.json");
+	const seqDir = path.join(dir, "seq");
+	if (!fs.existsSync(manifestPath) || !fs.existsSync(seqDir)) {
+	  return res.status(400).json({ error: "no manifest or seq; capture first" });
 	}
-	spawnSync('bash', ['-lc', `cd "${dir}" && zip -qr payload.zip seq manifest.json`])
-
-	const stream = fs.createReadStream(path.join(dir, 'payload.zip'))
-	const r = await fetch(`${process.env.CORE_URL}/ingest/upload`, {
-		method: 'POST',
+  
+	const zipPath = path.join(dir, "payload.zip");
+  
+	try {
+	  await new Promise((resolve, reject) => {
+		const output = fs.createWriteStream(zipPath);
+		const archive = archiver("zip", { zlib: { level: 9 } });
+		output.on("close", resolve);
+		archive.on("error", reject);
+		archive.pipe(output);
+		archive.file(manifestPath, { name: "manifest.json" });
+		archive.directory(seqDir, "seq");
+		archive.finalize();
+	  });
+  
+	  const stream = fs.createReadStream(zipPath);
+	  const url = `${process.env.CORE_URL}/ingest/upload`;
+	  const r = await fetch(url, {
+		method: "POST",
 		headers: { Authorization: `Bearer ${process.env.UPLOAD_TOKEN}` },
-		body: stream,
-	}).catch(e => ({ ok: false, statusText: e.message }))
-
-	if (!r.ok) return res.status(502).json({ error: 'upload failed', detail: r.statusText })
-	const j = await r.json().catch(() => ({}))
-	res.json(j)
-})
+		body: stream
+	  });
+  
+	  const txt = await r.text();
+	  if (!r.ok) {
+		return res.status(502).json({ error: "upload failed", status: r.status, body: txt, url });
+	  }
+	  const j = JSON.parse(txt);
+	  res.json(j);
+	} catch (e) {
+	  res.status(500).json({ error: "backend upload exception", detail: String(e) });
+	}
+  });
 
 const PORT = 8080
 app.listen(PORT, () => console.log(`edge-capture listening :${PORT}`))
