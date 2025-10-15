@@ -3,9 +3,8 @@ import { spawn, spawnSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
-import fetch from 'node-fetch'
-import dotenv from 'dotenv'
-dotenv.config()
+// import fetch from 'node-fetch'   ← 이 줄 삭제
+import 'dotenv/config' 
 
 const app = express()
 app.use(express.json())
