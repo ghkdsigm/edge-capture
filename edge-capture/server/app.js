@@ -100,6 +100,7 @@ app.post('/capture/start', (req, res) => {
 	  
 		// 모션 블러 억제. 너무 어두우면 조명을 올리거나 이 값을 3000~5000으로만 상향.
 		'--shutter', String(process.env.SHUTTER_US || 2000),
+		'--gain', String(process.env.GAIN || 6),
 	  
 		// 출력
 		'-o', path.join(seq, 'frame_%03d.jpg'),
