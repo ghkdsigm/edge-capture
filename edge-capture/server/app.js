@@ -83,26 +83,14 @@ app.post('/capture/start', (req, res) => {
   if (!bin) return res.status(500).json({ error: 'no still-capture binary found (run on CM4 or set MOCK=1)' })
 
 	const args = [
-		'--width', String(process.env.WIDTH || 2592),
-		'--height', String(process.env.HEIGHT || 1944),
+		'--width', '2592',
+		'--height', '1944',
 		'--timeout', String(timeoutMs),
 		'--timelapse', String(interval),
-	  
-		'--quality', String(process.env.JPEG_QUALITY || 95),
-	  
-		// 색/노출 관련
-		'--awb', (process.env.AWB_MODE || 'auto'),
-		'--denoise', (process.env.DENOISE || 'off'),
-		'--sharpness', String(process.env.SHARPNESS || 1.5),
-	  
-		// 실내 플리커 억제
-		'--flicker-period', (process.env.FLICKER || '50Hz'),
-	  
-		// 모션 블러 억제. 너무 어두우면 조명을 올리거나 이 값을 3000~5000으로만 상향.
-		'--shutter', String(process.env.SHUTTER_US || 2000),
-		'--gain', String(process.env.GAIN || 6),
-	  
-		// 출력
+		'--quality', '95',
+		// '--shutter', '3000',          // 1/333s
+		// '--denoise', 'auto',          // 필요시 off 테스트
+		// '--awb', 'tungsten',          // 조명에 맞게 조정
 		'-o', path.join(seq, 'frame_%03d.jpg'),
 		'-n',
 	  ];
