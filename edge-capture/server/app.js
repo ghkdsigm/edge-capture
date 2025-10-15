@@ -193,4 +193,4 @@ app.get('/capture/progress', (req, res) => {
 })
 
 const PORT = 8080
-app.listen(PORT, () => console.log(`edge-capture listening :${PORT}`))
+app.listen(PORT, '0.0.0.0', () => console.log(`edge-capture listening :${PORT}`))
