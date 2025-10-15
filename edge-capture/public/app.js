@@ -121,7 +121,7 @@ async function handleStart() {
 }
 
 // 업로드
-async function handleUploadWithTimeout(timeoutMs = 60000) {
+async function handleUploadWithTimeout(timeoutMs = 600000) {
   const car_code = $("car_code").value.trim();
   if (!car_code) { alert("차량코드를 입력하세요."); return; }
 
@@ -146,7 +146,7 @@ async function handleUploadWithTimeout(timeoutMs = 60000) {
 }
 
 async function handleUpload() {
-  return handleUploadWithTimeout(60000);
+  return handleUploadWithTimeout(600000);
 }
 
 // 좌측 프리뷰 버튼 이벤트
