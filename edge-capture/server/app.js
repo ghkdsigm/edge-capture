@@ -82,18 +82,14 @@ app.post('/capture/start', (req, res) => {
 
   if (!bin) return res.status(500).json({ error: 'no still-capture binary found (run on CM4 or set MOCK=1)' })
 
-	const args = [
-		'--width', '2592',
-		'--height', '1944',
-		'--timeout', String(timeoutMs),
-		'--timelapse', String(interval),
-		'--quality', '95',
-		// '--shutter', '3000',          // 1/333s
-		// '--denoise', 'auto',          // 필요시 off 테스트
-		// '--awb', 'tungsten',          // 조명에 맞게 조정
-		'-o', path.join(seq, 'frame_%03d.jpg'),
-		'-n',
-	  ];
+  const args = [
+    '--width', String(process.env.WIDTH || 1920),
+    '--height', String(process.env.HEIGHT || 1080),
+    '--timeout', String(timeoutMs),
+    '--timelapse', String(interval),
+    '-o', path.join(seq, 'frame_%03d.jpg'),
+    '-n',
+  ]
 
   console.log('[capture] bin=%s args=%j', bin, args)
 
