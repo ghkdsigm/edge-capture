@@ -1,0 +1,359 @@
+// SCSS Variables
+$primary-color: #2563eb;
+$primary-hover: #1d4ed8;
+$secondary-color: #64748b;
+$secondary-hover: #475569;
+$background-color: #f8fafc;
+$surface-color: #ffffff;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$border-color: #e2e8f0;
+$border-radius: 12px;
+
+// Spacing scale
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+
+// Shadow scale
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+// Typography
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+
+// Breakpoints
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+// Mixins
+@mixin glass-effect {
+	background: $surface-color;
+	backdrop-filter: blur(10px);
+	box-shadow: $shadow-md;
+}
+
+@mixin button-base {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	padding: $spacing-md $spacing-xl;
+	border: none;
+	border-radius: $border-radius;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-decoration: none;
+	min-width: 140px;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
+
+@mixin button-hover-effect {
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+		transition: left 0.5s;
+	}
+
+	&:hover::before {
+		left: 100%;
+	}
+}
+
+@mixin form-input {
+	padding: $spacing-md;
+	border: 2px solid $border-color;
+	border-radius: $border-radius;
+	font-size: 1rem;
+	transition: all 0.2s ease;
+	background: $surface-color;
+	color: $text-primary;
+
+	&:focus {
+		outline: none;
+		border-color: $primary-color;
+		box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+		transform: translateY(-1px);
+	}
+
+	&::placeholder {
+		color: $text-secondary;
+		opacity: 0.7;
+	}
+}
+
+@mixin responsive($breakpoint) {
+	@if $breakpoint == sm {
+		@media (max-width: $breakpoint-sm) {
+			@content;
+		}
+	}
+	@if $breakpoint == md {
+		@media (max-width: $breakpoint-md) {
+			@content;
+		}
+	}
+	@if $breakpoint == lg {
+		@media (max-width: $breakpoint-lg) {
+			@content;
+		}
+	}
+}
+
+// Base styles
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: $font-family-base;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+	color: $text-primary;
+	line-height: 1.6;
+}
+
+// App Container
+.app-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: $spacing-xl;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+// Header
+.app-header {
+	text-align: center;
+	margin-bottom: $spacing-2xl;
+	@include glass-effect;
+	padding: $spacing-xl;
+	border-radius: $border-radius;
+}
+
+.app-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	color: $text-primary;
+	margin-bottom: $spacing-sm;
+	background: linear-gradient(135deg, $primary-color, #7c3aed);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.app-subtitle {
+	font-size: 1.1rem;
+	color: $text-secondary;
+	font-weight: 400;
+}
+
+// Main Content
+.app-main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-xl;
+}
+
+// Form Section
+.form-section {
+	@include glass-effect;
+	padding: $spacing-xl;
+	border-radius: $border-radius;
+}
+
+.form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: $spacing-lg;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+}
+
+.form-label {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: $text-primary;
+	margin-bottom: $spacing-sm;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.form-input {
+	@include form-input;
+}
+
+// Actions Section
+.actions-section {
+	@include glass-effect;
+	padding: $spacing-xl;
+	border-radius: $border-radius;
+}
+
+.button-group {
+	display: flex;
+	gap: $spacing-md;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.btn {
+	@include button-base;
+	@include button-hover-effect;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, $primary-color, #7c3aed);
+	color: white;
+	box-shadow: $shadow-md;
+
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: $shadow-lg;
+		background: linear-gradient(135deg, $primary-hover, #6d28d9);
+	}
+}
+
+.btn-secondary {
+	background: linear-gradient(135deg, $secondary-color, #94a3b8);
+	color: white;
+	box-shadow: $shadow-md;
+
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: $shadow-lg;
+		background: linear-gradient(135deg, $secondary-hover, #64748b);
+	}
+}
+
+.btn-icon {
+	font-size: 1.2rem;
+}
+
+// Log Section
+.log-section {
+	@include glass-effect;
+	border-radius: $border-radius;
+	overflow: hidden;
+}
+
+.log-container {
+	padding: $spacing-lg;
+	background: #f8fafc;
+	border: 1px solid $border-color;
+	border-radius: $border-radius;
+	min-height: 120px;
+	white-space: pre-wrap;
+	font-family: $font-family-mono;
+	font-size: 0.875rem;
+	color: $text-secondary;
+	overflow-y: auto;
+	max-height: 300px;
+
+	&:empty::before {
+		content: '로그가 여기에 표시됩니다...';
+		color: $text-secondary;
+		opacity: 0.5;
+		font-style: italic;
+	}
+}
+
+// Responsive Design
+@include responsive(md) {
+	.app-container {
+		padding: $spacing-md;
+	}
+
+	.app-title {
+		font-size: 2rem;
+	}
+
+	.form-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.button-group {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.btn {
+		min-width: auto;
+	}
+}
+
+@include responsive(sm) {
+	.app-container {
+		padding: $spacing-sm;
+	}
+
+	.app-header,
+	.form-section,
+	.actions-section {
+		padding: $spacing-lg;
+	}
+
+	.app-title {
+		font-size: 1.75rem;
+	}
+}
+
+// Loading and Animation States
+.btn:active {
+	transform: translateY(0);
+}
+
+.btn.loading {
+	pointer-events: none;
+	opacity: 0.7;
+
+	.btn-icon {
+		animation: spin 1s linear infinite;
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+// Focus states for accessibility
+.btn:focus-visible {
+	outline: 2px solid $primary-color;
+	outline-offset: 2px;
+}
+
+.form-input:focus-visible {
+	outline: 2px solid $primary-color;
+	outline-offset: 2px;
+}
+
+// Smooth transitions for all interactive elements
+* {
+	transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}

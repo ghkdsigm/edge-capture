@@ -1,0 +1,33 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Build/coverage
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Env & secrets
+.env
+.env.*.local
+
+# Local data
+jobs/
+*.zip
+
+# OS/editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Misc
+*.swp
+*.swo

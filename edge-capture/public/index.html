@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width,initial-scale=1"
+		/>
+		<title>Mpark | Smart Auto 360° Panorama Generater</title>
+		<link
+			rel="stylesheet"
+			href="styles.css"
+		/>
+	</head>
+	<body>
+		<div class="app-container">
+			<header class="app-header">
+				<h1 class="app-title">Smart Auto 360° Panorama Generater</h1>
+				<p class="app-subtitle">스마트 오토 파노라마 뷰 생성 시스템</p>
+			</header>
+
+			<main class="app-main">
+				<section class="form-section">
+					<div class="form-grid">
+						<div class="form-group">
+							<label
+								for="car_code"
+								class="form-label"
+								>차량코드</label
+							>
+							<input
+								id="car_code"
+								type="text"
+								class="form-input"
+								placeholder="CAR-YYYYMMDD-001"
+							/>
+						</div>
+						<div class="form-group">
+							<label
+								for="rpm"
+								class="form-label"
+								>RPM</label
+							>
+							<input
+								id="rpm"
+								type="number"
+								step="0.1"
+								value="2"
+								class="form-input"
+							/>
+						</div>
+						<div class="form-group">
+							<label
+								for="frames"
+								class="form-label"
+								>프레임 수</label
+							>
+							<input
+								id="frames"
+								type="number"
+								value="36"
+								class="form-input"
+							/>
+						</div>
+						<div class="form-group">
+							<label class="form-label">저장 방식</label>
+							<div class="radio-group">
+								<div class="radio-item">
+									<input
+										id="save_local"
+										type="radio"
+										name="save_mode"
+										value="local"
+										checked
+									/>
+									<label for="save_local" class="radio-label">로컬 저장</label>
+								</div>
+								<div class="radio-item">
+									<input
+										id="save_upload"
+										type="radio"
+										name="save_mode"
+										value="upload"
+									/>
+									<label for="save_upload" class="radio-label">업로드</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section class="actions-section">
+					<div class="button-group">
+						<button
+							id="start"
+							class="btn btn-primary"
+						>
+							<span class="btn-icon">📷</span>
+							촬영 시작
+						</button>
+						<button
+							id="upload"
+							class="btn btn-secondary"
+						>
+							<span class="btn-icon">☁️</span>
+							업로드
+						</button>
+					</div>
+				</section>
+
+				<section class="log-section">
+					<div
+						id="log"
+						class="log-container"
+					></div>
+				</section>
+			</main>
+		</div>
+		<script src="app.js"></script>
+	</body>
+</html>
