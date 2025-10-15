@@ -1,4 +1,4 @@
-// 코드 주석에 이모티콘은 사용하지 마세요.
+//public/app.js
 
 // ===== API 베이스 설정 =====
 // index.html의 <body data-api="http://<CM4-IP>:8080"> 값을 우선 사용하고,

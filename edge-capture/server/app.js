@@ -1,14 +1,18 @@
+//server/app.js
 import express from 'express'
 import { spawn, spawnSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
+import cors from 'cors';
 // import fetch from 'node-fetch'   ← 이 줄 삭제
 import 'dotenv/config' 
 
 const app = express()
 app.use(express.json())
 app.use(express.static('public'))
+app.use(cors({ origin: true, credentials: true }));
+app.options('*', cors());
 
 const HOME = os.homedir() || process.env.USERPROFILE || process.env.HOME || process.cwd()
 const ROOT = path.resolve(HOME, 'edge-capture', 'jobs')
