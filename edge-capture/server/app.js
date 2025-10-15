@@ -87,13 +87,24 @@ app.post('/capture/start', (req, res) => {
 		'--height', String(process.env.HEIGHT || 1944),
 		'--timeout', String(timeoutMs),
 		'--timelapse', String(interval),
+	  
 		'--quality', String(process.env.JPEG_QUALITY || 95),
-		'--awb', (process.env.AWB_MODE || 'auto'),  // ← auto 권장
-		// '--awbgains', '1.5,1.5',                 // 수동 보정 쓸 땐 이 줄만 사용(둘 중 하나만)
-		// '--shutter', '3000',                     // 조명 충분하면 1/333s 근처로(블러 억제)
+	  
+		// 색/노출 관련
+		'--awb', (process.env.AWB_MODE || 'auto'),
+		'--denoise', (process.env.DENOISE || 'off'),
+		'--sharpness', String(process.env.SHARPNESS || 1.5),
+	  
+		// 실내 플리커 억제
+		'--flicker-period', (process.env.FLICKER || '50Hz'),
+	  
+		// 모션 블러 억제. 너무 어두우면 조명을 올리거나 이 값을 3000~5000으로만 상향.
+		'--shutter', String(process.env.SHUTTER_US || 2000),
+	  
+		// 출력
 		'-o', path.join(seq, 'frame_%03d.jpg'),
 		'-n',
-	  ]
+	  ];
 
   console.log('[capture] bin=%s args=%j', bin, args)
 
