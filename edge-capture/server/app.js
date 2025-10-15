@@ -58,16 +58,13 @@ app.post('/capture/start', (req, res) => {
 
   const T = 60 / rpm
   const interval = Math.max(200, Math.floor((T / frames) * 1000))
-  // 전체 타임아웃은 프레임 수 × 간격 + 여유
   const timeoutMs = frames * interval + 500
 
   const bin = pickStillBin()
 
-  // 개발 PC에서 MOCK=1이면 유효 프레임 더미 생성
   if (!bin && process.env.MOCK === '1') {
     for (let i = 1; i <= frames; i++) {
       const p = path.join(seq, `frame_${String(i).padStart(3, '0')}.jpg`)
-      // 단순 더미 바이트. 필요 시 실제 샘플 JPG로 교체하는 것이 안전하다.
       fs.writeFileSync(p, Buffer.from([0xff, 0xd8, 0xff, 0xd9]))
     }
     const manifest = {
@@ -90,7 +87,6 @@ app.post('/capture/start', (req, res) => {
     '--height', String(process.env.HEIGHT || 1080),
     '--timeout', String(timeoutMs),
     '--timelapse', String(interval),
-    // 최초에는 자동 노출에 맡기고 안정화 후 셔터/게인/화이트밸런스 강제 적용을 고려
     '-o', path.join(seq, 'frame_%03d.jpg'),
     '-n',
   ]
@@ -168,7 +164,6 @@ app.post('/capture/upload', async (req, res) => {
     const url = `${process.env.CORE_URL}/ingest/upload`
     const r = await fetch(url, {
       method: 'POST',
-      // Node.js fetch에서 ReadableStream 바디를 전송할 때 필수
       duplex: 'half',
       headers: {
         Authorization: `Bearer ${process.env.UPLOAD_TOKEN}`,
