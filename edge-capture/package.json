@@ -6,8 +6,10 @@
 		"start": "node server/app.js"
 	},
 	"dependencies": {
+		"cors": "^2.8.5",
 		"dotenv": "^16.6.1",
-		"express": "^4.19.2",
-		"node-fetch": "^3.3.2"
+		"express": "^4.21.2",
+		"node-fetch": "^3.3.2",
+		"unzipper": "^0.12.3"
 	}
 }
