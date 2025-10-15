@@ -20,7 +20,7 @@ $('start').onclick = async () => {
 	const rpm = Number($('rpm').value)
 	const frames = Number($('frames').value)
 	const save_mode = document.querySelector('input[name="save_mode"]:checked').value
-	
+
 	try {
 		log('촬영 시작...')
 		const j = await post('/capture/start', { car_code, rpm, frames, save_mode })
@@ -33,7 +33,7 @@ $('start').onclick = async () => {
 $('upload').onclick = async () => {
 	const car_code = $('car_code').value.trim()
 	const save_mode = document.querySelector('input[name="save_mode"]:checked').value
-	
+
 	try {
 		if (save_mode === 'upload') {
 			log('업로드 시작...')
