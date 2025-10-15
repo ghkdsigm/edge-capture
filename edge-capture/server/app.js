@@ -1,3 +1,4 @@
+// server/app.js
 import express from 'express'
 import { spawn, spawnSync } from 'child_process'
 import fs from 'fs'
@@ -167,22 +168,33 @@ app.post('/capture/upload', async (req, res) => {
     const url = `${process.env.CORE_URL}/ingest/upload`
     const r = await fetch(url, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${process.env.UPLOAD_TOKEN}` },
+      // Node.js fetch에서 ReadableStream 바디를 전송할 때 필수
+      duplex: 'half',
+      headers: {
+        Authorization: `Bearer ${process.env.UPLOAD_TOKEN}`,
+        'Content-Type': 'application/zip',
+        'Accept': 'application/json'
+      },
       body: stream
     })
 
-    const txt = await r.text()
+    const txt = await r.text().catch(() => '')
     if (!r.ok) {
-      return res.status(502).json({ error: 'upload failed', status: r.status, body: txt, url })
+      return res.status(502).json({
+        error: 'upload failed',
+        status: r.status,
+        url,
+        body: txt.slice(0, 500)
+      })
     }
-    const j = JSON.parse(txt)
+    const j = JSON.parse(txt || '{}')
     res.json(j)
   } catch (e) {
     res.status(500).json({ error: 'backend upload exception', detail: String(e) })
   }
 })
 
-// 진행률 조회용 간단 엔드포인트(선택)
+// 진행률 조회용 간단 엔드포인트
 app.get('/capture/progress', (req, res) => {
   const { car_code } = req.query || {}
   if (!car_code) return res.status(400).json({ error: 'car_code required' })
