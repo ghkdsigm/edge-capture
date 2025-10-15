@@ -1,5 +1,3 @@
-//public/app.js
-
 // ===== API 베이스 설정 =====
 // index.html의 <body data-api="http://<CM4-IP>:8080"> 값을 우선 사용하고,
 // 없으면 현재 페이지의 origin을 사용한다.
@@ -19,6 +17,26 @@ async function post(path, body, { timeoutMs = 20000 } = {}) {
       body: JSON.stringify(body),
       signal: controller.signal
     });
+    const text = await r.text();
+    let j = {};
+    try { j = JSON.parse(text); } catch {}
+    if (!r.ok) {
+      const msg = j.error || `request failed (${r.status})`;
+      throw new Error(`${msg} [${url}]${text ? " :: " + text.slice(0, 200) : ""}`);
+    }
+    return j;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// 헬스 체크용 GET 헬퍼
+async function get(path, { timeoutMs = 10000 } = {}) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  const url = `${API_BASE}${path}`;
+  try {
+    const r = await fetch(url, { method: "GET", signal: controller.signal });
     const text = await r.text();
     let j = {};
     try { j = JSON.parse(text); } catch {}
@@ -92,7 +110,6 @@ async function handleStart() {
   setStatus("촬영 중");
   setProgress(5);
 
-  // 촬영 시간에 맞춰 타임아웃을 충분히 크게 잡는다.
   // 한 바퀴 시간(ms) + 여유 버퍼
   const turnMs = Math.ceil((60 / Math.max(0.1, rpm)) * 1000);
   const startTimeout = turnMs + 15000;
@@ -159,6 +176,17 @@ function bindPreview() {
   });
 }
 
+// API 핑
+async function ping() {
+  try {
+    const j = await get("/healthz");
+    addHistory("success", "PING OK", JSON.stringify(j));
+  } catch (e) {
+    addHistory("error", "PING FAIL", String(e.message || e));
+    setStatus("API 연결 실패");
+  }
+}
+
 // 이벤트 바인딩
 function bindActions() {
   $("start").addEventListener("click", handleStart);
@@ -171,4 +199,5 @@ function bindActions() {
   bindActions();
   bindPreview();
   addHistory("info", "API BASE", API_BASE);
+  ping();
 })();
