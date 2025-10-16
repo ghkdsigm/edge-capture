@@ -183,7 +183,15 @@ app.post('/capture/upload', async (req, res) => {
       })
     }
     const j = JSON.parse(txt || '{}')
-    res.json(j)
+    // 코어 응답의 상대경로(j.viewer_url)에 CORE_URL을 붙여 절대경로를 만든다.
+    const coreBase = String(process.env.CORE_URL || '').replace(/\/$/, '')
+    const viewer_full =
+      (j && typeof j.viewer_url === 'string' && coreBase)
+        ? coreBase + j.viewer_url
+        : (j?.viewer_url || '')
+
+    // 프론트가 바로 iframe에 넣을 수 있도록 viewer_full을 함께 반환
+    return res.json({ ...j, viewer_full })
   } catch (e) {
     res.status(500).json({ error: 'backend upload exception', detail: String(e) })
   }

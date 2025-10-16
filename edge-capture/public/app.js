@@ -53,6 +53,22 @@ async function get(path, { timeoutMs = 10000 } = {}) {
 // DOM 유틸
 function $(id) { return document.getElementById(id); }
 
+function showViewer(url) {
+  const wrap = $("preview");
+  if (!wrap || !url) return;
+
+  // placeholder 제거 후 iframe 삽입
+  wrap.innerHTML = "";
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("title", "360 Panorama Viewer");
+  iframe.style.width = "100%";
+  iframe.style.height = "520px";
+  iframe.style.border = "1px solid #e5e7eb";
+  iframe.style.borderRadius = "8px";
+  iframe.src = url;
+  wrap.appendChild(iframe);
+}
+
 // 상단 날짜 표시
 function setToday() {
   const d = new Date();
@@ -157,6 +173,12 @@ async function handleUploadWithTimeout(timeoutMs = 600000) {
     setStatus("업로드 실패");
     setResponse(String(e.message || e));
     addHistory("error", "UPLOAD FAIL", String(e.message || e));
+    if (j.viewer_full) {
+      showViewer(j.viewer_full);
+      setStatus("뷰어 로드 완료");
+    } else if (j.viewer_url) {
+      showViewer(j.viewer_url); // 최후 수단: 상대경로일 수 있음
+    }
   } finally {
     setBusy(false);
   }
@@ -169,10 +191,23 @@ async function handleUpload() {
 // 좌측 프리뷰 버튼 이벤트
 function bindPreview() {
   $("btn-refresh").addEventListener("click", () => {
-    addHistory("info", "PREVIEW", "미리보기 새로고침 요청");
+    const iframe = $("preview")?.querySelector("iframe");
+    if (iframe && iframe.src) {
+      iframe.contentWindow?.location?.reload();
+      addHistory("info", "PREVIEW", "뷰어 새로고침");
+    } else {
+      addHistory("info", "PREVIEW", "미리보기 새로고침 요청 (뷰어 없음)");
+    }
   });
+
   $("btn-play").addEventListener("click", () => {
-    addHistory("info", "PREVIEW", "시퀀스 재생 요청");
+    const iframe = $("preview")?.querySelector("iframe");
+    if (iframe && iframe.src) {
+      iframe.focus();
+      addHistory("info", "PREVIEW", "시퀀스 재생(드래그/휠 조작)");
+    } else {
+      addHistory("info", "PREVIEW", "시퀀스 재생 요청 (뷰어 없음)");
+    }
   });
 }
 
