@@ -5,6 +5,9 @@ const API_BASE =
   (document.body.dataset.api ? document.body.dataset.api.replace(/\/$/, "") : "") ||
   window.location.origin;
 
+console.log("[app] API_BASE =", API_BASE);
+console.log("[app] app.js loaded at", new Date().toISOString());
+
 // 공통 POST 헬퍼
 async function post(path, body, { timeoutMs = 20000 } = {}) {
   const controller = new AbortController();
@@ -54,10 +57,16 @@ async function get(path, { timeoutMs = 10000 } = {}) {
 function $(id) { return document.getElementById(id); }
 
 function showViewer(url) {
+  console.log("[preview] showViewer url =", url);
   const wrap = $("preview");
-  if (!wrap || !url) return;
-
-  // placeholder 제거 후 iframe 삽입
+  if (!wrap) {
+    console.warn("[preview] #preview not found");
+    return;
+  }
+  if (!url) {
+    console.warn("[preview] empty url");
+    return;
+  }
   wrap.innerHTML = "";
   const iframe = document.createElement("iframe");
   iframe.setAttribute("title", "360 Panorama Viewer");
@@ -168,17 +177,25 @@ async function handleUploadWithTimeout(timeoutMs = 600000) {
     setStatus("업로드 완료");
     setResponse(j);
     addHistory("success", "UPLOAD OK", `${car_code} 업로드 완료 (job_id=${j.job_id || "-"})`);
+    console.log("[upload] response =", j);
+
+    if (j.viewer_full) {
+      addHistory("info", "VIEWER", "viewer_full ok, loading iframe");
+      showViewer(j.viewer_full);
+      setStatus("뷰어 로드 완료");
+    } else if (j.viewer_url) {
+      addHistory("info", "VIEWER", "viewer_full missing, using viewer_url");
+      showViewer(j.viewer_url);
+    } else {
+      addHistory("error", "VIEWER", "no viewer url in response");
+      console.warn("[upload] no viewer url. full json:", j);
+    }
   } catch (e) {
     setProgress(0);
     setStatus("업로드 실패");
     setResponse(String(e.message || e));
     addHistory("error", "UPLOAD FAIL", String(e.message || e));
-    if (j.viewer_full) {
-      showViewer(j.viewer_full);
-      setStatus("뷰어 로드 완료");
-    } else if (j.viewer_url) {
-      showViewer(j.viewer_url); // 최후 수단: 상대경로일 수 있음
-    }
+    
   } finally {
     setBusy(false);
   }
